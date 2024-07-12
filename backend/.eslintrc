@@ -21,7 +21,9 @@
     "no-return-assign": 0,
     "camelcase": 0,
     "import/extensions": 0,
-    "@typescript-eslint/no-redeclare": 0
+    "@typescript-eslint/no-redeclare": 0,
+    "indent": ["error", "tab"], // Set indent rule to use tabs
+    "no-tabs": 0 // Allow the use of tabs
   },
   "settings": {
     "import/parsers": {

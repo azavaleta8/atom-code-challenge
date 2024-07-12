@@ -1,0 +1,23 @@
+{
+    "root": true,
+    "env": {
+      "node": true,
+      "es6": true
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": "./tsconfig.json",
+      "sourceType": "module"
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    ],
+    "rules": {
+      "indent": ["error", "tab"], // Configura ESLint para usar tabs
+      "no-tabs": 0 // Permite el uso de tabs
+      // Otras reglas personalizadas aquí
+    }
+  }
+  
