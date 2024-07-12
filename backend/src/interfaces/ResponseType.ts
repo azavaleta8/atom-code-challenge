@@ -4,7 +4,7 @@ import { UserType } from './UserType';
 export interface MessageResponse {
   status: StatusCodes;
   message?: string;
-  payload?: UserType[];
+  payload?: UserType[] | String;
 }
 
 export interface ErrorResponse extends MessageResponse {

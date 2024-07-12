@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { MessageResponse, ErrorResponse } from '../../interfaces/ResponseType';
-import { createUser, fetchUser } from './userService';
+import { createUser, deleteUserByEmail, fetchUserByEmail } from './userService';
 
 // Function to validate email format using regex
 const isValidEmail = (email: string): boolean => {
@@ -9,8 +9,13 @@ const isValidEmail = (email: string): boolean => {
 	return emailRegex.test(email);
 };
 
-// Controller function to get user by email
-export const getUser = async (req: Request, res: Response) : Promise<void> => {
+/**
+ * Controller function to find a user by email.
+ * @param req Request object from Express
+ * @param res Response object from Express
+ * @returns Promise<void>
+ */
+export const getUserController = async (req: Request, res: Response) : Promise<void> => {
 	try {
 
 		const email: string = req.params.email; // Extracting email from request params
@@ -21,7 +26,7 @@ export const getUser = async (req: Request, res: Response) : Promise<void> => {
 		}
 
 		// Fetching user data from userService
-		const user = await fetchUser(email);
+		const user = await fetchUserByEmail(email);
 
 		// Creating success response object
 		const response: MessageResponse = {
@@ -58,5 +63,113 @@ export const getUser = async (req: Request, res: Response) : Promise<void> => {
 		};
 
 		res.status(status).send(errorResponse); // Sending error response
+	}
+};
+
+/**
+ * Controller function to create a new user.
+ * @param req Request object from Express
+ * @param res Response object from Express
+ * @returns Promise<void>
+ */
+export const createUserController = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const { email } = req.body; // Extract email from request body
+
+		// Validate email format
+		if (!email || !isValidEmail(email)) {
+			throw new Error('Invalid email format'); // Throw an error if email format is invalid
+		}
+
+		// Create a new user using the createUser service
+		const newUser = await createUser(email);
+
+		// Create a success response object
+		const response: MessageResponse = {
+			status: StatusCodes.CREATED, // Use status code 201 to indicate successful creation
+			payload: newUser,
+		};
+
+		res.status(StatusCodes.CREATED).send(response); // Send the success response to the client
+	} catch (err) {
+		console.error(err); // Log the error to the console
+
+		let status = StatusCodes.INTERNAL_SERVER_ERROR; // Default status code for internal server errors
+		const message = (err as Error).message || ''; // Get the error message from the thrown error
+
+		// Handle specific error cases
+		switch (message) {
+			case 'Invalid email format':
+				status = StatusCodes.UNPROCESSABLE_ENTITY; // Use status code 422 for invalid email format
+				break;
+			case 'User Already Exist':
+				status = StatusCodes.CONFLICT; // Use status code 409 if the user already exists
+				break;
+			default:
+				status = StatusCodes.INTERNAL_SERVER_ERROR; // Any other internal server error
+				break;
+		}
+
+		// Create an error response object
+		const errorResponse: ErrorResponse = {
+			status: status,
+			error: message,
+		};
+
+		res.status(status).send(errorResponse); // Send the error response to the client
+	}
+};
+
+/**
+ * Controller function to delete a user by email.
+ * @param req Request object from Express
+ * @param res Response object from Express
+ * @returns Promise<void>
+ */
+export const deleteUserController = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const email: string = req.params.email; // Extract email from request parameters
+
+		// Validate email format
+		if (!isValidEmail(email)) {
+			throw new Error('Invalid email format'); // Throw an error if email format is invalid
+		}
+
+		// Delete the user using the deleteUserByEmail service
+		const message = await deleteUserByEmail(email);
+
+		// Create a success response object
+		const response: MessageResponse = {
+			status: StatusCodes.OK,
+			message: message,
+		};
+
+		res.status(StatusCodes.OK).send(response); // Send the success response to the client
+	} catch (err) {
+		console.error(err); // Log the error to the console
+
+		let status = StatusCodes.INTERNAL_SERVER_ERROR; // Default status code for internal server errors
+		const message = (err as Error).message || ''; // Get the error message from the thrown error
+
+		// Handle specific error cases
+		switch (message) {
+			case 'User Not Found':
+				status = StatusCodes.NOT_FOUND; // Use status code 404 for user not found
+				break;
+			case 'Invalid email format':
+				status = StatusCodes.UNPROCESSABLE_ENTITY; // Use status code 422 for invalid email format
+				break;
+			default:
+				status = StatusCodes.INTERNAL_SERVER_ERROR; // Any other internal server error
+				break;
+		}
+
+		// Create an error response object
+		const errorResponse: ErrorResponse = {
+			status: status,
+			error: message,
+		};
+
+		res.status(status).send(errorResponse); // Send the error response to the client
 	}
 };
