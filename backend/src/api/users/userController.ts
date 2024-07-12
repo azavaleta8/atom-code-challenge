@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { MessageResponse, ErrorResponse } from '../../interfaces/ResponseType';
 import { createUser, deleteUserByEmail, fetchUserByEmail } from './userService';
+import { RequestBodyUser } from '../../interfaces/UserType';
 
 // Function to validate email format using regex
 const isValidEmail = (email: string): boolean => {
@@ -74,7 +75,7 @@ export const getUserController = async (req: Request, res: Response) : Promise<v
  */
 export const createUserController = async (req: Request, res: Response): Promise<void> => {
 	try {
-		const { email } = req.body; // Extract email from request body
+		const { email } : RequestBodyUser = req.body as RequestBodyUser; // Extract email from request body
 
 		// Validate email format
 		if (!email || !isValidEmail(email)) {
