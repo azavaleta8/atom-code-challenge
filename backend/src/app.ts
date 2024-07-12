@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express, { Application, Router } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 
@@ -9,7 +9,7 @@ import swaggerOptions from './swaggerOptions';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 
-const app = express();
+const app : Application= express();
 
 app.use(morgan('dev'));
 app.use(cors());

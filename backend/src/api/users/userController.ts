@@ -38,7 +38,7 @@ export const getUserController = async (req: Request, res: Response) : Promise<v
 
 	} catch (err) {
 		
-		console.error(err); // Logging error to console
+		// console.error(err); // Logging error to console
 
 		let status = StatusCodes.INTERNAL_SERVER_ERROR; // Default status code for internal server error
 		const message = (err as Error).message || ''; // Getting error message from thrown error
@@ -92,22 +92,22 @@ export const createUserController = async (req: Request, res: Response): Promise
 
 		res.status(StatusCodes.CREATED).send(response); // Send the success response to the client
 	} catch (err) {
-		console.error(err); // Log the error to the console
+		// console.error(err); // Log the error to the console
 
 		let status = StatusCodes.INTERNAL_SERVER_ERROR; // Default status code for internal server errors
 		const message = (err as Error).message || ''; // Get the error message from the thrown error
 
 		// Handle specific error cases
 		switch (message) {
-			case 'Invalid email format':
-				status = StatusCodes.UNPROCESSABLE_ENTITY; // Use status code 422 for invalid email format
-				break;
-			case 'User Already Exist':
-				status = StatusCodes.CONFLICT; // Use status code 409 if the user already exists
-				break;
-			default:
-				status = StatusCodes.INTERNAL_SERVER_ERROR; // Any other internal server error
-				break;
+		case 'Invalid email format':
+			status = StatusCodes.UNPROCESSABLE_ENTITY; // Use status code 422 for invalid email format
+			break;
+		case 'User Already Exist':
+			status = StatusCodes.CONFLICT; // Use status code 409 if the user already exists
+			break;
+		default:
+			status = StatusCodes.INTERNAL_SERVER_ERROR; // Any other internal server error
+			break;
 		}
 
 		// Create an error response object
@@ -146,22 +146,22 @@ export const deleteUserController = async (req: Request, res: Response): Promise
 
 		res.status(StatusCodes.OK).send(response); // Send the success response to the client
 	} catch (err) {
-		console.error(err); // Log the error to the console
+		// console.error(err); // Log the error to the console
 
 		let status = StatusCodes.INTERNAL_SERVER_ERROR; // Default status code for internal server errors
 		const message = (err as Error).message || ''; // Get the error message from the thrown error
 
 		// Handle specific error cases
 		switch (message) {
-			case 'User Not Found':
-				status = StatusCodes.NOT_FOUND; // Use status code 404 for user not found
-				break;
-			case 'Invalid email format':
-				status = StatusCodes.UNPROCESSABLE_ENTITY; // Use status code 422 for invalid email format
-				break;
-			default:
-				status = StatusCodes.INTERNAL_SERVER_ERROR; // Any other internal server error
-				break;
+		case 'User Not Found':
+			status = StatusCodes.NOT_FOUND; // Use status code 404 for user not found
+			break;
+		case 'Invalid email format':
+			status = StatusCodes.UNPROCESSABLE_ENTITY; // Use status code 422 for invalid email format
+			break;
+		default:
+			status = StatusCodes.INTERNAL_SERVER_ERROR; // Any other internal server error
+			break;
 		}
 
 		// Create an error response object

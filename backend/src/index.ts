@@ -1,7 +1,6 @@
 import app from './app';
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { Firestore, getFirestore } from 'firebase/firestore';
-import { exit } from 'process';
 import 'dotenv/config';
 
 const { NODE_ENV, HOST, PORT, DB_API_KEY } = process.env;
@@ -21,14 +20,16 @@ try {
 	const firebase: FirebaseApp = initializeApp(firebaseConfig);
 	db  = getFirestore(firebase);
 
-	console.log('Firestore initialized successfully:', firebaseConfig.projectId);
+	if (NODE_ENV !== 'test') {
 
-	app.listen(PORT, () => {
-		console.log(`Server (${NODE_ENV}) running on port http://${HOST}:${PORT}`);
-		console.log(`Swagger docs are available at  http://${HOST}:${PORT}/api-docs`);
-	});
+		console.log('Firestore initialized successfully:', firebaseConfig.projectId);
+
+		app.listen(PORT, () => {
+			console.log(`Server (${NODE_ENV}) running on port http://${HOST}:${PORT}`);
+			console.log(`Swagger docs are available at  http://${HOST}:${PORT}/api-docs`);
+		});
+	}
 
 } catch (error) {
 	console.error('Error initializing the server:', error);
-	exit();
 }
