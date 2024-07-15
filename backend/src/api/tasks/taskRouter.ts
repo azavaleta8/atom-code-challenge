@@ -1,19 +1,21 @@
 import express, { Router } from 'express';
 import { asyncHandler, authenticateJWT } from '../../middlewares';
-import { createTaskController } from './taskController';
+import { createTaskController, getTaskByUserIdController } from './taskController';
 
 export const taskRouter: Router = express.Router();
 
 /**
  * @swagger
- * /api/tasks/user/{id}:
+ * /api/tasks/users/{userId}:
  *   get:
  *     summary: Get all tasks for a user
  *     tags:
  *       - Tasks
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: userId
  *         required: true
  *         schema:
  *           type: string
@@ -21,8 +23,77 @@ export const taskRouter: Router = express.Router();
  *     responses:
  *       200:
  *         description: List of tasks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   description: Status code
+ *                   example: 200
+ *                 payload:
+ *                   type: array
+ *                   description: List of task objects
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         description: The task ID
+ *                         example: 2SPVXxL5qwQFy9F8jkAv
+ *                       userId:
+ *                         type: string
+ *                         description: The user ID
+ *                         example: OZvikOJIZpHnqFUlcNb9
+ *                       title:
+ *                         type: string
+ *                         description: Title of the task
+ *                         example: Title
+ *                       description:
+ *                         type: string
+ *                         description: description of the task
+ *                         example: Description
+ *                       completed:
+ *                         type: boolean
+ *                         description: Describres task as completed
+ *                         example: true
+ *                       createdAt:
+ *                         type: string
+ *                         description: Date of creation
+ *                         example: 2024-07-15T07:39:37.350Z
+ *                       updatedAt:
+ *                         type: string
+ *                         description: Date of update
+ *                         example: 2024-07-15T07:39:37.350Z
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 401
+ *                 error:
+ *                   type: string
+ *                   example: "User not authenticated"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
  */
-// taskRouter.get('/tasks/user/:id', asyncHandler(getTasksController));
+taskRouter.get('/tasks/users/:userId',authenticateJWT ,asyncHandler(getTaskByUserIdController));
 
 /**
  * @swagger
@@ -142,7 +213,7 @@ export const taskRouter: Router = express.Router();
  *                   type: string
  *                   example: "Internal server error"
  */
-taskRouter.post('/tasks', authenticateJWT ,asyncHandler(createTaskController));
+taskRouter.post('/tasks',authenticateJWT ,asyncHandler(createTaskController));
 
 /**
  * @swagger

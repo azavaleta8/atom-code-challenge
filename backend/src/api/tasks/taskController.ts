@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { MessageResponse, ErrorResponse } from '../../interfaces/ResponseType';
-import { createTask}  from './taskService';
+import { createTask, fetchTaskByUserId}  from './taskService';
 import { RequestBodyTask, TaskType } from '../../interfaces/TaskType';
 
 function isValidRequestBodyTask(obj: unknown): obj is RequestBodyTask {
@@ -19,6 +19,61 @@ function isValidRequestBodyTask(obj: unknown): obj is RequestBodyTask {
 	);
 }
 
+
+/**
+ * Controller function to find a task a  by userId.
+ * @param req Request object from Express
+ * @param res Response object from Express
+ * @returns Promise<void>
+ */
+export const getTaskByUserIdController = async (req: Request, res: Response) : Promise<void> => {
+	try {
+		console.log(req.params.userId, req.userId)
+		if (!req.params.userId || req.userId !== req.params.userId) {
+			throw new Error('User not authenticated');
+		}
+
+		const userId: string = req.params.userId // Extracting email from request params
+
+		// Fetching user data from userService
+		const tasks = await fetchTaskByUserId(userId);
+
+		// Creating success response object
+		const response: MessageResponse = {
+			status: StatusCodes.OK,
+			payload: tasks,
+		};
+
+		res.status(StatusCodes.OK).send(response); // Sending success response
+
+	} catch (err) {
+		
+		// console.error(err); // Logging error to console
+
+		let status = StatusCodes.INTERNAL_SERVER_ERROR; // Default status code for internal server error
+		const message = (err as Error).message || ''; // Getting error message from thrown error
+
+		// Handling specific error cases
+		switch (message) {
+			case 'User not authenticated':
+				status = StatusCodes.UNAUTHORIZED; // Use status code 401 for invalid token or userid
+				break;
+			default:
+				status = StatusCodes.INTERNAL_SERVER_ERROR;
+				break;
+		}
+
+		// Creating error response object
+		const errorResponse: ErrorResponse = {
+			status: status,
+			error: message,
+		};
+
+		res.status(status).send(errorResponse); // Sending error response
+	}
+};
+
+
 /**
  * Controller function to create a new task.
  * @param req Request object from Express
@@ -31,7 +86,7 @@ export const createTaskController = async (req: Request, res: Response): Promise
 		if (!isValidRequestBodyTask(req.body)) {
 			throw new Error('Invalid Format');
 		}
-		console.log(req.userId)
+		
 		if (!req.userId || req.userId !== req.body.userId) {
 			throw new Error('User not authenticated');
 		}

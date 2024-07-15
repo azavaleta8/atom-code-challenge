@@ -35,6 +35,13 @@ declare global {
 	}
 }
 
+interface JWTPayload {
+	email: string
+	id: string,
+	iat: number,
+	exp: number
+}
+
 export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
 	const authHeader = req.headers['authorization'];
   
@@ -57,15 +64,15 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
 	const token = parts[1];
 
 	jwt.verify(token, JWT_SECRET, (err, decoded) => {
-		console.log(err)
 		if (err) {
 			return res.status(StatusCodes.UNAUTHORIZED).json({
 				status: StatusCodes.UNAUTHORIZED,
 				error: 'Invalid token'
 			});
 		}
-  
-		req.userId = decoded as string;
+		
+		const { id } = decoded as JWTPayload
+		req.userId = id;
 		next();
 	});
 };
