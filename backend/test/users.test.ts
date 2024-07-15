@@ -103,15 +103,15 @@ describe('User API Endpoints', () => {
 			expect(payload.token).not.toBe('');
 		});
 	
-		it('should return 404 if user is not found', async () => {
+		it('should return 401 if user is incorrect', async () => {
 			const response = await request(app)
 				.post('/api/users/login')
 				.send({ email: 'nonexistent@example.com' });
 	
 			const body: MessageResponse = response.body as MessageResponse;
-			expect(response.status).toBe(404);
-			expect(body).toHaveProperty('status', 404);
-			expect(body).toHaveProperty('error', 'User Not Found');
+			expect(response.status).toBe(401);
+			expect(body).toHaveProperty('status', 401);
+			expect(body).toHaveProperty('error', 'Email or password incorrect');
 		});
 	
 		it('should return 422 for invalid email format', async () => {

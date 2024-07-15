@@ -179,7 +179,12 @@ export const deleteUserController = async (req: Request, res: Response): Promise
 	}
 };
 
-
+/**
+ * Controller function to login a user by email.
+ * @param req Request object from Express
+ * @param res Response object from Express
+ * @returns Promise<void>
+ */
 export const loginUserController = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const { email }: RequestBodyUser = req.body as RequestBodyUser;
@@ -206,11 +211,12 @@ export const loginUserController = async (req: Request, res: Response): Promise<
 		res.status(StatusCodes.OK).send(response);
 	} catch (err) {
 		let status = StatusCodes.INTERNAL_SERVER_ERROR;
-		const message = (err as Error).message || '';
+		let message = (err as Error).message || '';
 
 		switch (message) {
 		case 'User Not Found':
-			status = StatusCodes.NOT_FOUND;
+			message = "Email or password incorrect";
+			status = StatusCodes.UNAUTHORIZED;
 			break;
 		case 'Invalid email format':
 			status = StatusCodes.UNPROCESSABLE_ENTITY;

@@ -294,11 +294,44 @@ userRouter.delete('/users/:email', asyncHandler(deleteUserController));
  *                     token:
  *                       type: string
  *                       description: JWT token
- *       404:
- *         description: User not found
+ *       401:
+ *         description: Email or password incorrect
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 401
+ *                 error:
+ *                   type: string
+ *                   example: "Email or password incorrect"
  *       422:
  *         description: Invalid email format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 422
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid email format"
  *       500:
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
  */
 userRouter.post("/users/login", asyncHandler(loginUserController));
