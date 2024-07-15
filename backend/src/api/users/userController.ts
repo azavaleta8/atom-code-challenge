@@ -6,7 +6,7 @@ import { RequestBodyUser } from '../../interfaces/UserType';
 import jwt from 'jsonwebtoken';
 
 // Asegúrate de tener una clave secreta para firmar el JWT
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+const JWT_SECRET = process.env.JWT_SECRET || 'SECRET';
 
 // Function to validate email format using regex
 const isValidEmail = (email: string): boolean => {

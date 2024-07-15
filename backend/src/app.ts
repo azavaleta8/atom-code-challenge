@@ -8,6 +8,7 @@ import { userRouter } from './api/users/userRouter';
 import swaggerOptions from './swaggerOptions';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+import { taskRouter } from './api/tasks/taskRouter';
 
 const app : Application= express();
 
@@ -23,6 +24,7 @@ const apiRouter: Router = express.Router();
 // Montar los routers individuales en el router combinado
 apiRouter.use('/', healthCheckRouter);
 apiRouter.use('/', userRouter);
+apiRouter.use('/', taskRouter);
 
 // Usar el router combinado en la ruta principal
 
