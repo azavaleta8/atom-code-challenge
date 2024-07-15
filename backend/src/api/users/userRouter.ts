@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { createUserController, deleteUserController, getUserController } from './userController';
+import { createUserController, deleteUserController, getUserController, loginUserController } from './userController';
 import { asyncHandler } from '../../middlewares';
 
 export const userRouter: Router = express.Router();
@@ -256,3 +256,49 @@ userRouter.post("/users", asyncHandler(createUserController));
  *                   example: "Internal server error"
  */
 userRouter.delete('/users/:email', asyncHandler(deleteUserController));
+
+/**
+ * @swagger
+ * /api/users/login:
+ *   post:
+ *     summary: Login user and get JWT
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "user@example.com"
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 payload:
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                       description: JWT token
+ *       404:
+ *         description: User not found
+ *       422:
+ *         description: Invalid email format
+ *       500:
+ *         description: Internal server error
+ */
+userRouter.post("/users/login", asyncHandler(loginUserController));

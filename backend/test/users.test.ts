@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../src/app';
 import { MessageResponse } from '../src/interfaces/ResponseType';
+import { Token, UserType } from '../src/interfaces/UserType';
 
 describe('User API Endpoints', () => {
 	const testEmail = 'test@example.com';
@@ -15,9 +16,10 @@ describe('User API Endpoints', () => {
 			expect(response.status).toBe(201);
 			expect(body).toHaveProperty('status', 201);
 
-			if (body.payload) {
-				expect(body.payload[0]).toHaveProperty('id');
-				expect(body.payload[0]).toHaveProperty('email', testEmail);
+			const payload : UserType[] = body.payload as UserType[]
+			if (payload) {
+				expect(payload[0]).toHaveProperty('id');
+				expect(payload[0]).toHaveProperty('email', testEmail);
 			} else {
 				fail('Expected response.body.payload to be defined');
 			}
@@ -58,9 +60,10 @@ describe('User API Endpoints', () => {
 			const body : MessageResponse = response.body as MessageResponse;
 			expect(response.body).toHaveProperty('status', 200);
 
-			if (body.payload) {
-				expect(body.payload[0]).toHaveProperty('id');
-				expect(body.payload[0]).toHaveProperty('email', testEmail);
+			const payload : UserType[] = body.payload as UserType[]
+			if (payload) {
+				expect(payload[0]).toHaveProperty('id');
+				expect(payload[0]).toHaveProperty('email', testEmail);
 			} else {
 				fail('Expected response.body.payload to be defined');
 			}
@@ -78,6 +81,44 @@ describe('User API Endpoints', () => {
 		it('should return 422 for invalid email format', async () => {
 			const response = await request(app).get('/api/users/invalidemail');
 
+			expect(response.status).toBe(422);
+			expect(response.body).toHaveProperty('status', 422);
+			expect(response.body).toHaveProperty('error', 'Invalid email format');
+		});
+	});
+
+	describe('POST /api/users/login', () => {
+
+		it('should login an existing user and return a JWT', async () => {
+			const response = await request(app)
+				.post('/api/users/login')
+				.send({ email: testEmail });
+	
+			const body: MessageResponse = response.body as MessageResponse;
+			expect(response.status).toBe(200);
+			expect(body).toHaveProperty('status', 200);
+	
+			const payload = body.payload as Token;
+			expect(payload).toHaveProperty('token');
+			expect(payload.token).not.toBe('');
+		});
+	
+		it('should return 404 if user is not found', async () => {
+			const response = await request(app)
+				.post('/api/users/login')
+				.send({ email: 'nonexistent@example.com' });
+	
+			const body: MessageResponse = response.body as MessageResponse;
+			expect(response.status).toBe(404);
+			expect(body).toHaveProperty('status', 404);
+			expect(body).toHaveProperty('error', 'User Not Found');
+		});
+	
+		it('should return 422 for invalid email format', async () => {
+			const response = await request(app)
+				.post('/api/users/login')
+				.send({ email: 'invalidemail' });
+	
 			expect(response.status).toBe(422);
 			expect(response.body).toHaveProperty('status', 422);
 			expect(response.body).toHaveProperty('error', 'Invalid email format');

@@ -6,3 +6,7 @@ export interface UserType {
 export interface RequestBodyUser {
     email: string;
 }
+
+export interface Token{
+    token: string
+}

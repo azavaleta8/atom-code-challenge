@@ -3,6 +3,10 @@ import { StatusCodes } from 'http-status-codes';
 import { MessageResponse, ErrorResponse } from '../../interfaces/ResponseType';
 import { createUser, deleteUserByEmail, fetchUserByEmail } from './userService';
 import { RequestBodyUser } from '../../interfaces/UserType';
+import jwt from 'jsonwebtoken';
+
+// Asegúrate de tener una clave secreta para firmar el JWT
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 
 // Function to validate email format using regex
 const isValidEmail = (email: string): boolean => {
@@ -172,5 +176,55 @@ export const deleteUserController = async (req: Request, res: Response): Promise
 		};
 
 		res.status(status).send(errorResponse); // Send the error response to the client
+	}
+};
+
+
+export const loginUserController = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const { email }: RequestBodyUser = req.body as RequestBodyUser;
+
+		if (!email || !isValidEmail(email)) {
+			throw new Error('Invalid email format');
+		}
+
+		const user = await fetchUserByEmail(email);
+
+		const payload = {
+			email : user[0].email,
+			id : user[0].id
+		}
+
+		// Generar JWT
+		const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+
+		const response: MessageResponse = {
+			status: StatusCodes.OK,
+			payload: { token },
+		};
+
+		res.status(StatusCodes.OK).send(response);
+	} catch (err) {
+		let status = StatusCodes.INTERNAL_SERVER_ERROR;
+		const message = (err as Error).message || '';
+
+		switch (message) {
+		case 'User Not Found':
+			status = StatusCodes.NOT_FOUND;
+			break;
+		case 'Invalid email format':
+			status = StatusCodes.UNPROCESSABLE_ENTITY;
+			break;
+		default:
+			status = StatusCodes.INTERNAL_SERVER_ERROR;
+			break;
+		}
+
+		const errorResponse: ErrorResponse = {
+			status: status,
+			error: message,
+		};
+
+		res.status(status).send(errorResponse);
 	}
 };
