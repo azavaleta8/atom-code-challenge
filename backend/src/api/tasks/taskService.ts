@@ -131,7 +131,7 @@ export const deleteTask = async (userId: string, taskId: string) => {
 	}
 
 	if (taskDoc.userId !== userId) {
-		throw new Error('Unauthorized to update this task');
+		throw new Error('Unauthorized to delete this task');
 	}
 
 	// Get the document reference
