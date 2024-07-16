@@ -2,7 +2,7 @@
   "name": "to-do-app",
   "version": "1.0.0",
   "scripts": {
-    "ng": "ng",
+    "ng": "ng b --output-path docs --base-href /atom-code-challenge/",
     "start": "ng serve --host 0.0.0.0 --port 4200",
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
