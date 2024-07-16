@@ -4,9 +4,8 @@
   "description": " To Do API",
   "main": "src/index.ts",
   "scripts": {
-    "start": "ts-node src/index.ts",
     "dev": "npm run test & nodemon src/index.ts",
-    "server": "npm run build & node dist/src/index.js",
+    "start": "node dist/src/index.js",
     "build": "tsc",
     "start:dist": "node dist/src/index.js",
     "lint": "eslint --fix src test",
