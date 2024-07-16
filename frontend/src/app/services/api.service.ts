@@ -78,7 +78,7 @@ export class ApiService {
 			'Content-Type': 'application/json',
 		})
 		};
-		const token = localStorage.getItem('token');
+		const token = sessionStorage.getItem('token');
 		if (token) {
 		httpOptions.headers = httpOptions.headers.set('Authorization', `Bearer ${token}`);
 		}
