@@ -1,0 +1,22 @@
+.container {
+    display: block;
+    width: 100%;
+}
+
+.title-header{
+    height: auto;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: monospace;
+}
+
+.Admin-container {
+    margin: auto;
+    background: white;
+    border-radius: 20px 20px 0px 0px;
+    border: 3px solid #282c34;
+    min-width: 500px;
+    width: 80%;
+    height: auto;
+}

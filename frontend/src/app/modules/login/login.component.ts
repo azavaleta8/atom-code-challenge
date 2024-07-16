@@ -31,6 +31,7 @@ export class LoginComponent {
 	}
 
 	toggleRegister(){
+		this.error = false
 		this.register = this.register ? false : true
 	}
 
@@ -38,83 +39,68 @@ export class LoginComponent {
 		return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email) && email.length <= 50;
 	}
 
-	registerUser(payload : object) {
+	async registerUser(payload: any): Promise<void> {
+		try {
+			const response: any = await this.apiService.post('users', payload).toPromise();
+			console.log('Registration successful', response);
 
-		this.apiService.post('users', payload).subscribe({
 
-			next: (response: any) => {
-				
-				console.log('Register successful', response);
+			if (response && response.payload) {
+				sessionStorage.setItem('userId', response.payload.id);
+				sessionStorage.setItem('email', this.email);
+				return
+			} else {
 
-				if (response && response.payload) {
-					sessionStorage.setItem('userId', response.payload.id);
-					sessionStorage.setItem('email', this.email);
-				} else {
-
-					this.error = true;
-					this.errorMsg = 'Invalid response from server';
-				}
-
-			},
-			error: (error) => {
-				console.error('Register failed', error);
-				this.handleError(error)
-			},
-			complete: () => {
-				this.loading = false;
+				this.error = true;
+				this.errorMsg = 'Invalid response from server';
 			}
-
-		});
-
+		} catch (error) {
+			console.error('Registration failed', error);
+			throw error; // Re-lanzar el error para que pueda ser manejado en onSubmit
+		}
 	}
 
 	async onSubmit() {
-
-		this.loading = true;
-		this.error = false;
-		this.errorMsg = '';
-	
-		if (!this.isValidEmail(this.email)) {
-		  this.loading = false;
-		  this.error = true;
-		  this.errorMsg = 'Email or password invalid';
-		  return;
-		}
-	
-		const payload = {
-		  email: this.email,
-		};
-
-		if(this.register){
-			await this.registerUser(payload)
-		}
-	
-		this.apiService.post('users/login', payload).subscribe({
-
-			next: (response: any) => {
-				
-				console.log('Login successful', response);
-
-				if (response && response.payload) {
-					sessionStorage.setItem('token', response.payload.token);
-					sessionStorage.setItem('email', this.email);
-					// this.router.navigate(['/dashboard']);
-				} else {
-
-					this.error = true;
-					this.errorMsg = 'Invalid response from server';
-				}
-
-			},
-			error: (error) => {
-				console.error('Login failed', error);
-				this.handleError(error)
-			},
-			complete: () => {
-				this.loading = false;
+		try {
+			this.loading = true;
+			this.error = false;
+			this.errorMsg = '';
+		
+			if (!this.isValidEmail(this.email)) {
+				this.error = true;
+				this.errorMsg = 'Email or password invalid';
+				return;
 			}
-
-		});
+		
+			const payload = {
+				email: this.email,
+			};
+		
+			if (this.register) {
+				await this.registerUser(payload);
+			}
+		
+			// Convertimos la llamada al API en una promesa
+			const response: any = await this.apiService.post('users/login', payload).toPromise();
+		
+			console.log('Login successful', response);
+		
+			if (response && response.payload) {
+				sessionStorage.setItem('token', response.payload.token);
+				sessionStorage.setItem('email', this.email);
+				this.loading = false;
+				this.router.navigate(['/dashboard']);
+			} else {
+				this.error = true;
+				this.errorMsg = 'Invalid response from server';
+			}
+			
+		} catch (error) {
+			console.error('Login failed', error);
+			this.handleError(error);
+		} finally {
+			this.loading = false;
+		}
 	}
 
 	handleError(error: any){
