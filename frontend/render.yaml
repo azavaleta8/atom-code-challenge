@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: to-do-app
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist/to-do-app
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
