@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { MessageResponse, ErrorResponse } from '../../interfaces/ResponseType';
-import { createTask, deleteTask, fetchTaskByUserId}  from './taskService';
+import { createTask, deleteTask, fetchTaskByUserId, updateTask}  from './taskService';
 import { RequestBodyTask, TaskType } from '../../interfaces/TaskType';
 
 function isValidRequestBodyTask(obj: unknown): obj is RequestBodyTask {
@@ -19,7 +19,6 @@ function isValidRequestBodyTask(obj: unknown): obj is RequestBodyTask {
 	);
 }
 
-
 /**
  * Controller function to find a task a  by userId.
  * @param req Request object from Express
@@ -28,7 +27,7 @@ function isValidRequestBodyTask(obj: unknown): obj is RequestBodyTask {
  */
 export const getTaskByUserIdController = async (req: Request, res: Response) : Promise<void> => {
 	try {
-		console.log(req.params.userId, req.userId)
+		// console.log(req.params.userId, req.userId)
 		if (!req.params.userId || req.userId !== req.params.userId) {
 			throw new Error('User not authenticated');
 		}
@@ -131,6 +130,70 @@ export const createTaskController = async (req: Request, res: Response): Promise
 };
 
 /**
+ * Controller function to update a new task.
+ * @param req Request object from Express
+ * @param res Response object from Express
+ * @returns Promise<void>
+ */
+export const updateTaskController = async (req: Request, res: Response): Promise<void> => {
+	try {
+
+		if (!isValidRequestBodyTask(req.body)) {
+			throw new Error('Invalid Format');
+		}
+		
+		if (!req.userId) {
+			throw new Error('User not authenticated');
+		}
+
+		if (req.userId !== req.body.userId){
+			throw new Error('Unauthorized to update this task');
+		}
+
+		const taskUpdate: RequestBodyTask = req.body;
+		const taskId = req.params.taskId;
+
+		const updatedTask = await updateTask(taskId, taskUpdate);
+		
+		const response: MessageResponse = {
+			status: StatusCodes.OK,
+			payload: [updatedTask],
+		};
+		
+		res.status(StatusCodes.OK).send(response);
+
+	} catch (err) {
+
+		let status = StatusCodes.INTERNAL_SERVER_ERROR;
+		const message = err instanceof Error ? err.message : 'Unknown error';
+
+		switch (message) {
+			case 'Task not found':
+				status = StatusCodes.NOT_FOUND;
+				break;
+			case 'Invalid Format':
+				status = StatusCodes.UNPROCESSABLE_ENTITY;
+				break;
+			case 'Unauthorized to update this task':
+				status = StatusCodes.FORBIDDEN;
+				break;
+			case 'User not authenticated':
+				status = StatusCodes.UNAUTHORIZED;
+				break;
+			default:
+				status = StatusCodes.INTERNAL_SERVER_ERROR;
+		}
+
+		const errorResponse: ErrorResponse = {
+			status: status,
+			error: message,
+		};
+
+		res.status(status).send(errorResponse);
+	}
+};
+
+/**
  * Controller function to delete a task.
  * @param req Request object from Express
  * @param res Response object from Express
@@ -156,6 +219,7 @@ export const deleteTaskController = async (req: Request, res: Response): Promise
 		};
 
 		res.status(StatusCodes.OK).send(response); // Send the success response to the client
+
 	} catch (err) {
 		// console.error(err); // Log the error to the console
 
@@ -169,6 +233,9 @@ export const deleteTaskController = async (req: Request, res: Response): Promise
 				break;
 			case 'User not authenticated':
 				status = StatusCodes.UNAUTHORIZED; // Use status code 401 for invalid token or userid
+				break;
+			case 'Unauthorized to delete this task':
+				status = StatusCodes.FORBIDDEN;
 				break;
 			default:
 				status = StatusCodes.INTERNAL_SERVER_ERROR; // Any other internal server error

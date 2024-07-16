@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import { asyncHandler, authenticateJWT } from '../../middlewares';
-import { createTaskController, deleteTaskController, getTaskByUserIdController } from './taskController';
+import { createTaskController, deleteTaskController, getTaskByUserIdController, updateTaskController } from './taskController';
 
 export const taskRouter: Router = express.Router();
 
@@ -222,6 +222,8 @@ taskRouter.post('/tasks',authenticateJWT ,asyncHandler(createTaskController));
  *     summary: Update an existing task
  *     tags:
  *       - Tasks
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: taskId
@@ -234,12 +236,124 @@ taskRouter.post('/tasks',authenticateJWT ,asyncHandler(createTaskController));
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/TaskUpdate'
+ *             type: object
+ *             required:
+ *               - userId
+ *               - title
+ *               - description
+ *               - completed
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: ID of the user who owns the task
+ *                 example: OZvikOJIZpHnqFUlcNb9
+ *               title:
+ *                 type: string
+ *                 description: Title of the task
+ *               description:
+ *                 type: string
+ *                 description: Detailed description of the task
+ *               completed:
+ *                 type: boolean
+ *                 description: Whether the task is completed or not
  *     responses:
  *       200:
- *         description: Task updated successfully
+ *         description: Task successfully updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 payload:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       description: The task ID
+ *                       example: 5OqxFVFZdcsN7BNXKhyL
+ *                     userId:
+ *                       type: string
+ *                       description: ID of the user who owns the task
+ *                       example: user123
+ *                     title:
+ *                       type: string
+ *                       description: Title of the task
+ *                       example: Complete project report
+ *                     description:
+ *                       type: string
+ *                       description: Detailed description of the task
+ *                       example: Write and submit the final project report by Friday
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       description: The date and time when the task was created
+ *                       example: 2024-07-15T07:14:39.821Z
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       description: The date and time when the task was last updated
+ *                       example: 2024-07-15T07:14:39.821Z
+ *                     completed:
+ *                       type: boolean
+ *                       description: Whether the task is completed or not
+ *                       example: false
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 401
+ *                 error:
+ *                   type: string
+ *                   example: "User not authenticated"
+ *       403:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 403
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized to update this task"
+ *       422:
+ *         description: Invalid input format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 422
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid Format"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
  */
-// taskRouter.put('/tasks/:taskId', asyncHandler(updateTaskController));
+taskRouter.put('/tasks/:taskId',authenticateJWT ,asyncHandler(updateTaskController));
 
 /**
  * @swagger
@@ -284,6 +398,19 @@ taskRouter.post('/tasks',authenticateJWT ,asyncHandler(createTaskController));
  *                 error:
  *                   type: string
  *                   example: "User not authenticated"
+ *       403:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 403
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized to delete this task"
  *       500:
  *         description: Internal server error
  *         content:

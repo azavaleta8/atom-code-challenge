@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs, DocumentSnapshot, QueryDocumentSnapshot, deleteDoc, Timestamp, and, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, DocumentSnapshot, QueryDocumentSnapshot, deleteDoc, Timestamp, and, doc, updateDoc } from 'firebase/firestore';
 import { addDoc, DocumentData, QuerySnapshot, getDoc } from 'firebase/firestore';
 import { DocumentReference, CollectionReference, Query } from 'firebase/firestore';
 import { db } from '../../index';
@@ -82,6 +82,35 @@ export const createTask = async (task : RequestBodyTask) => {
 };
 
 /**
+ * Function to update a task document by taskId.
+ * @param {String} taskId Id of the task to delete.
+ * @param {String} updates data to update.
+ * @returns {void}
+ */
+export const updateTask = async (taskId: string, updates: RequestBodyTask) => {
+
+	const taskRef : DocumentReference<DocumentData, DocumentData> = doc(db, 'tasks', taskId);
+	const taskSnap : DocumentData = await getDoc(taskRef);
+  
+	if (!taskSnap.exists()) {
+	  throw new Error('Task not found');
+	}
+  
+	const now = Timestamp.now().toDate().toISOString();
+
+	const updatedTask = {
+	  ...taskSnap.data(),
+	  ...updates,
+	  updatedAt: now
+	};
+	
+	console.log(updateTask)
+	await updateDoc(taskRef, updatedTask);
+  
+	return { id: taskId, ...updatedTask };
+  };
+
+/**
  * Function to delete a task document by taskId.
  * @param {String} userId UserId of the task to delete.
  * @param {String} taskId Id of the task to delete.
@@ -99,6 +128,10 @@ export const deleteTask = async (userId: string, taskId: string) => {
 	// Check if there is exactly one document found
 	if (!querySnapshot.exists() || taskDoc.userId !== userId) {
 		throw new Error('Task Not Found');
+	}
+
+	if (taskDoc.userId !== userId) {
+		throw new Error('Unauthorized to update this task');
 	}
 
 	// Get the document reference
