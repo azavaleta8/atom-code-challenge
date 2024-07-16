@@ -17,6 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "baseHref": "/atom-code-challenge/",
             "outputPath": "dist/to-do-app",
             "index": "src/index.html",
             "browser": "src/main.ts",
@@ -28,7 +29,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/_redirects"
+              "src/404.html"
             ],
             "styles": [
               "src/styles.scss"
