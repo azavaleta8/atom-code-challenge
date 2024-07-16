@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { LoginResponse } from '../../interfaces/auth.interface';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
+import { jwtDecode } from "jwt-decode";
 
 @Component({
   selector: 'app-login',
@@ -14,7 +13,7 @@ import { ApiService } from '../../services/api.service';
   imports: [CommonModule, FormsModule, HttpClientModule, MatProgressSpinnerModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-  providers: [AuthService]
+  providers: []
 })
 export class LoginComponent {
 	email: string = '';
@@ -44,11 +43,8 @@ export class LoginComponent {
 			const response: any = await this.apiService.post('users', payload).toPromise();
 			console.log('Registration successful', response);
 
-
 			if (response && response.payload) {
-				sessionStorage.setItem('userId', response.payload.id);
-				sessionStorage.setItem('email', this.email);
-				return
+				return;
 			} else {
 
 				this.error = true;
@@ -86,8 +82,13 @@ export class LoginComponent {
 			console.log('Login successful', response);
 		
 			if (response && response.payload) {
-				sessionStorage.setItem('token', response.payload.token);
-				sessionStorage.setItem('email', this.email);
+
+				const token = response.payload.token;
+				const decodedToken: any = jwtDecode(token);
+
+				sessionStorage.setItem('token', token);
+				sessionStorage.setItem('userId', decodedToken.id)
+				sessionStorage.setItem('email',  decodedToken.email);
 				this.loading = false;
 				this.router.navigate(['/dashboard']);
 			} else {
