@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs, DocumentSnapshot, QueryDocumentSnapshot, deleteDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, DocumentSnapshot, QueryDocumentSnapshot, deleteDoc, Timestamp, and, doc } from 'firebase/firestore';
 import { addDoc, DocumentData, QuerySnapshot, getDoc } from 'firebase/firestore';
 import { DocumentReference, CollectionReference, Query } from 'firebase/firestore';
 import { db } from '../../index';
@@ -79,4 +79,34 @@ export const createTask = async (task : RequestBodyTask) => {
 
 	// Return the response object as an array
 	return [response];
+};
+
+/**
+ * Function to delete a task document by taskId.
+ * @param {String} userId UserId of the task to delete.
+ * @param {String} taskId Id of the task to delete.
+ * @returns {void}
+ */
+export const deleteTask = async (userId: string, taskId: string) => {
+	
+	// Query to find taks by ID
+	const q : DocumentReference<DocumentData, DocumentData> = doc(db, "tasks", taskId)
+
+	// Get the query snapshot (expecting only one document)
+	const querySnapshot: DocumentData = await getDoc(q);
+	const taskDoc : TaskType = querySnapshot.data()
+
+	// Check if there is exactly one document found
+	if (!querySnapshot.exists() || taskDoc.userId !== userId) {
+		throw new Error('Task Not Found');
+	}
+
+	// Get the document reference
+	const docSnapshot = querySnapshot;
+
+	// Delete the document
+	 await deleteDoc(docSnapshot.ref);
+
+	// Return success message or handle as needed
+	return "Task successfully deleted";
 };

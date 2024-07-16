@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import { asyncHandler, authenticateJWT } from '../../middlewares';
-import { createTaskController, getTaskByUserIdController } from './taskController';
+import { createTaskController, deleteTaskController, getTaskByUserIdController } from './taskController';
 
 export const taskRouter: Router = express.Router();
 
@@ -248,6 +248,8 @@ taskRouter.post('/tasks',authenticateJWT ,asyncHandler(createTaskController));
  *     summary: Delete an existing task
  *     tags:
  *       - Tasks
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: taskId
@@ -257,6 +259,43 @@ taskRouter.post('/tasks',authenticateJWT ,asyncHandler(createTaskController));
  *         description: Task ID
  *     responses:
  *       200:
- *         description: Task deleted successfully
+ *         description: Task successfully deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Task successfully deleted"
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 401
+ *                 error:
+ *                   type: string
+ *                   example: "User not authenticated"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
  */
-// taskRouter.delete('/tasks/:taskId', asyncHandler(deleteTaskController));
+taskRouter.delete('/tasks/:taskId',authenticateJWT ,asyncHandler(deleteTaskController));

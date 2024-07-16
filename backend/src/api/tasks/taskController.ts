@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { MessageResponse, ErrorResponse } from '../../interfaces/ResponseType';
-import { createTask, fetchTaskByUserId}  from './taskService';
+import { createTask, deleteTask, fetchTaskByUserId}  from './taskService';
 import { RequestBodyTask, TaskType } from '../../interfaces/TaskType';
 
 function isValidRequestBodyTask(obj: unknown): obj is RequestBodyTask {
@@ -111,6 +111,61 @@ export const createTaskController = async (req: Request, res: Response): Promise
 		switch (message) {
 			case 'Invalid Format':
 				status = StatusCodes.UNPROCESSABLE_ENTITY; // Use status code 422 for invalid email format
+				break;
+			case 'User not authenticated':
+				status = StatusCodes.UNAUTHORIZED; // Use status code 401 for invalid token or userid
+				break;
+			default:
+				status = StatusCodes.INTERNAL_SERVER_ERROR; // Any other internal server error
+				break;
+		}
+
+		// Create an error response object
+		const errorResponse: ErrorResponse = {
+			status: status,
+			error: message,
+		};
+
+		res.status(status).send(errorResponse); // Send the error response to the client
+	}
+};
+
+/**
+ * Controller function to delete a task.
+ * @param req Request object from Express
+ * @param res Response object from Express
+ * @returns Promise<void>
+ */
+export const deleteTaskController = async (req: Request, res: Response): Promise<void> => {
+	try {
+
+		if (!req.params.taskId || !req.userId) {
+			throw new Error('User not authenticated');
+		}
+
+		const taskId: string = req.params.taskId
+		const userId: string = req.userId
+
+		// Delete the user using the deleteUserByEmail service
+		const message = await deleteTask(userId, taskId);
+
+		// Create a success response object
+		const response: MessageResponse = {
+			status: StatusCodes.OK,
+			message: message,
+		};
+
+		res.status(StatusCodes.OK).send(response); // Send the success response to the client
+	} catch (err) {
+		// console.error(err); // Log the error to the console
+
+		let status = StatusCodes.INTERNAL_SERVER_ERROR; // Default status code for internal server errors
+		const message = (err as Error).message || ''; // Get the error message from the thrown error
+
+		// Handle specific error cases
+		switch (message) {
+			case 'Task Not Found':
+				status = StatusCodes.NOT_FOUND; // Use status code 404 for user not found
 				break;
 			case 'User not authenticated':
 				status = StatusCodes.UNAUTHORIZED; // Use status code 401 for invalid token or userid
