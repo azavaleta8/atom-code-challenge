@@ -2,6 +2,85 @@
 
     <app-navbar></app-navbar>
 
-    <div class="dashboar-container">asdsad</div>
+    <div class="Admin-container">
+
+        <div class="title-header">
+          Tareas
+          <span style="cursor: pointer;" (click)="handleRefreshClick()">🔄</span>
+        </div>
+    
+        <div *ngIf="!loading" class="response">
+            <div *ngIf="!showNewTaskForm" class='new-btn' (click)="handleNewTaskClick()">
+            <span style="margin: auto;">Agregar Tarea</span>
+            </div>
+
+            <form *ngIf="showNewTaskForm" (ngSubmit)="handleFormSubmit()">
+                <div class='div-input'>
+                    <input type="text" id="newTaskTitle" name="newTaskTitle" [(ngModel)]="newTaskTitle" placeholder="Titulo" maxlength="50">
+                    <textarea id="newDescription" name="newDescription" [(ngModel)]="newDescription"  placeholder="Descripcion" maxlength="500"></textarea>
+                    <div class="checkbox-container">
+                        <label>Estado: </label>
+                        <input class="checkbox" type="checkbox" id="newCompleted" name="newCompleted" [(ngModel)]="newCompleted">
+                    </div>
+                </div>
+
+                <button class='new-btn' type="submit" [disabled]="!newTaskTitle || !newDescription">{{newEditTask ? "Modificar Tarea" : "Crear Tarea"}}</button>
+
+                <div *ngIf="error" style="height: auto;">
+                    {{ errorMsg }}
+                </div>
+            </form>
+
+            <br>
+            <hr class='separator'>
+            <br>
+
+            <div *ngIf="error" style="height: auto;">
+            {{ errorMsg }}
+            </div>
+
+            <div *ngIf="tasksData && tasksData.length === 0" style="text-align: center;">
+            No hay Tareas
+            </div>
+
+            <ng-container *ngIf="tasksData && tasksData.length > 0">
+            <div *ngFor="let task of tasksData; let i = index">
+                <div class='label-user'>
+                    <div class="task-data">
+                        <div class="description">Titulo: {{ task.title }}</div>
+                        <div class="description">Descripcion: {{ task.description }}</div>
+                        <div>
+                            Estado: 
+                            <mat-icon *ngIf="task.completed" style="color: green;">check_circle</mat-icon>
+                            <mat-icon *ngIf="!task.completed" style="color: red;">cancel</mat-icon>
+                        </div>
+                        <div>Fecha Modificacion: {{ parseDate(task.updatedAt) }}</div>
+                        <div>Fecha Creacion: {{ parseDate(task.createdAt) }}</div>
+                        
+                    </div>
+
+                    <button style="display: block;"  (click)="editTask(task)" class="form-btn">
+                        <mat-icon>edit</mat-icon>
+                        <span>Editar</span>
+                    </button>
+
+                    <button style="display: block;" (click)="deleteTask(task.id)" class="form-btn">
+                        <mat-icon>delete</mat-icon>
+                        <span>Eliminar</span>
+                    </button>
+                      
+                </div>
+
+                <br>
+                <hr class='separator'>
+                <br>
+            </div>
+            </ng-container>
+        </div>
+    
+        <div class="spinner" *ngIf="loading" style="display: flex;">
+          <mat-spinner [diameter]="150" color="accent"></mat-spinner>
+        </div>
+    </div>
 
 </div>

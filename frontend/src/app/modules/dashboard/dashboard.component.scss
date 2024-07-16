@@ -19,4 +19,142 @@
     min-width: 500px;
     width: 80%;
     height: auto;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+.Admin-container > * {
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    width: 95%;
+}
+
+.response > span{
+    height: auto;
+    text-align: left;
+    font-size: 15px;
+    font-family: monospace;
+    display: block;
+}
+
+.spinner{
+    display: flex;
+}
+
+.spinner > *{
+    margin: auto;
+    margin-bottom: 20px;
+}
+
+.label-user {
+    margin-top: 10px;
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+}
+
+.new-btn{
+    cursor: pointer;
+    background-color: #282c34;
+    color: white;
+    border-radius: 10px;
+    width: 100%;
+    font-size: 20px;
+    display: flex;
+    margin: auto;
+    height: 50px;
+    margin-bottom: 30px;
+    font-family: monospace;
+}
+
+.form-btn{
+    cursor: pointer;
+    background-color: #282c34;
+    color: white;
+    border-radius: 15px;
+    width: 100px;
+    display: flex;
+    height: 80px;
+    margin: auto;
+    margin-right: 10px;
+}
+
+.separator {
+    border-top: 3px solid #282c34;
+}
+
+form {
+    max-width: 500px;
+    margin: auto;
+}
+
+.checkbox {
+    width: 40px;
+    height: 40px;
+}
+
+button {
+    border: none;
+    background-color: #2E77FF;
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 10px !important;
+    justify-content: center;
+    align-items: center;
+}
+
+button:disabled{
+    cursor: none;
+    background-color: gray;
+    opacity: 50%;
+}
+
+button:hover{
+    cursor: pointer;
+    /* background-color: gray; */
+    opacity: 80%;
+}
+
+.task-data {
+    width: 80%;
+}
+
+.task-data > div {
+    
+    min-height: 30px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+mat-icon {
+    vertical-align: middle;
+    font-size: 20px;
+}
+
+.checkbox-container {
+    padding: 0 !important;
+    margin-left: 0px;
+    display: flex
+}
+
+.checkbox-container > * {
+    margin: auto;
+    margin-left: 0px;
+    margin-right: 20px;
+}
+
+.div-input > * {
+    margin: auto;
+    width: 100%;
+    height: 50px;
+    margin-bottom: 30px;
+    font-size: 20px;
+    font-family: monospace;
+    box-sizing:border-box;
+    padding-left: 15px;
+    border-color: #282c34;
+    color: #282c34;
+    border-radius: 10px;
 }

@@ -74,13 +74,13 @@ export class ApiService {
   // Método para obtener las opciones HTTP (incluyendo headers)
 	private getHttpOptions(options = {}): any {
 		const httpOptions = {
-		headers: new HttpHeaders({
-			'Content-Type': 'application/json',
-		})
+			headers: new HttpHeaders({
+				'Content-Type': 'application/json',
+			})
 		};
 		const token = sessionStorage.getItem('token');
 		if (token) {
-		httpOptions.headers = httpOptions.headers.set('Authorization', `Bearer ${token}`);
+			httpOptions.headers = httpOptions.headers.set('Authorization', `Bearer ${token}`);
 		}
 		return { ...httpOptions, ...options };
   	}
