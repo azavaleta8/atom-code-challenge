@@ -1,10 +1,41 @@
-<div class="login-container">
-    <h2>Login</h2>
-    <form (ngSubmit)="onSubmit()">
-      <div>
-        <label for="email">Email:</label>
-         <input type="email" id="email" [(ngModel)]="email" name="email" required>
-      </div>
-      <button type="submit">Login</button>
-    </form>
+<div class="container">
+
+	<div class="login-container">
+		
+		<div class="title-header">
+			Bienvenido To do App
+		</div>
+	
+		<form [ngStyle]="{'display': loading ? 'none' : 'block'}" class="form-container" (ngSubmit)="onSubmit()">
+			<input type="email" id="email" [(ngModel)]="email" name="email" placeholder="Email" required>
+	
+			<div *ngIf="error" style="height: auto;">
+				{{ errorMsg }}
+			</div>
+	
+			<button *ngIf="!register" type="submit" [disabled]="!email">Iniciar Sesion</button>
+
+			<button *ngIf="register" type="submit" [disabled]="!email">Registrarse</button>
+		</form>
+
+		<div *ngIf="!loading && !register"
+			class="link" 
+			(click)="toggleRegister()" 
+			[style.display]="'flex'">
+			<span>Registrate</span>
+		</div>
+
+		<div *ngIf="!loading && register" 
+			class="link" 
+			(click)="toggleRegister()" 
+			[style.display]="'flex'">
+			<span>Iniciar Sesion</span>
+		</div>
+	
+		<div *ngIf="loading" class="spinner">
+			<mat-spinner [diameter]="150" color="accent"></mat-spinner>
+		</div>
+
+	</div>
+
 </div>

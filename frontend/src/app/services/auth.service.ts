@@ -11,17 +11,6 @@ import { LoginResponse } from '../interfaces/auth.interface';
 export class AuthService {
   constructor(private apiService: ApiService) { }
 
-  login(email: string): Observable<any> {
-    return this.apiService.post<any>('users/login', { email })
-      .pipe(
-        tap((response : LoginResponse) => {
-          if (response && response.payload && response.payload.token) {
-            sessionStorage.setItem('token', response.payload.token);
-          }
-        })
-      );
-  }
-
   logout() {
     sessionStorage.removeItem('token');
   }
