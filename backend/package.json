@@ -4,7 +4,7 @@
   "description": " To Do API",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "npm run test & nodemon src/index.ts",
+    "dev": "nodemon src/index.ts",
     "start": "node dist/src/index.js",
     "build": "tsc",
     "start:dist": "node dist/src/index.js",
