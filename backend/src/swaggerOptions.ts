@@ -10,11 +10,11 @@ const swaggerOptions: Options = {
 		},
 		components: {
 			securitySchemes: {
-			  	BearerAuth: {
+				BearerAuth: {
 					type: 'http',
 					scheme: 'bearer',
 					bearerFormat: 'JWT',
-			  	},
+				},
 			},
 		}
 	},

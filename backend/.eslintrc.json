@@ -16,7 +16,8 @@
     ],
     "rules": {
       "indent": ["error", "tab"], // Configura ESLint para usar tabs
-      "no-tabs": 0 // Permite el uso de tabs
+      "no-tabs": 0, // Permite el uso de tabs
+      "@typescript-eslint/no-namespace": ["error", { "allowDeclarations": true }]
       // Otras reglas personalizadas aquí
     }
   }

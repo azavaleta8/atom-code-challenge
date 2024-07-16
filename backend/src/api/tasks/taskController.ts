@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { MessageResponse, ErrorResponse } from '../../interfaces/ResponseType';
 import { createTask, deleteTask, fetchTaskByUserId, updateTask}  from './taskService';
-import { RequestBodyTask, TaskType } from '../../interfaces/TaskType';
+import { RequestBodyTask, TaskType} from '../../interfaces/TaskType';
 
 function isValidRequestBodyTask(obj: unknown): obj is RequestBodyTask {
 	if (typeof obj !== 'object' || obj === null) {
@@ -54,12 +54,12 @@ export const getTaskByUserIdController = async (req: Request, res: Response) : P
 
 		// Handling specific error cases
 		switch (message) {
-			case 'User not authenticated':
-				status = StatusCodes.UNAUTHORIZED; // Use status code 401 for invalid token or userid
-				break;
-			default:
-				status = StatusCodes.INTERNAL_SERVER_ERROR;
-				break;
+		case 'User not authenticated':
+			status = StatusCodes.UNAUTHORIZED; // Use status code 401 for invalid token or userid
+			break;
+		default:
+			status = StatusCodes.INTERNAL_SERVER_ERROR;
+			break;
 		}
 
 		// Creating error response object
@@ -108,15 +108,15 @@ export const createTaskController = async (req: Request, res: Response): Promise
 
 		// Handle specific error cases
 		switch (message) {
-			case 'Invalid Format':
-				status = StatusCodes.UNPROCESSABLE_ENTITY; // Use status code 422 for invalid email format
-				break;
-			case 'User not authenticated':
-				status = StatusCodes.UNAUTHORIZED; // Use status code 401 for invalid token or userid
-				break;
-			default:
-				status = StatusCodes.INTERNAL_SERVER_ERROR; // Any other internal server error
-				break;
+		case 'Invalid Format':
+			status = StatusCodes.UNPROCESSABLE_ENTITY; // Use status code 422 for invalid email format
+			break;
+		case 'User not authenticated':
+			status = StatusCodes.UNAUTHORIZED; // Use status code 401 for invalid token or userid
+			break;
+		default:
+			status = StatusCodes.INTERNAL_SERVER_ERROR; // Any other internal server error
+			break;
 		}
 
 		// Create an error response object
@@ -151,9 +151,9 @@ export const updateTaskController = async (req: Request, res: Response): Promise
 		}
 
 		const taskUpdate: RequestBodyTask = req.body;
-		const taskId = req.params.taskId;
+		const taskId : string = req.params.taskId;
 
-		const updatedTask = await updateTask(taskId, taskUpdate);
+		const updatedTask : TaskType = await updateTask(taskId, taskUpdate);
 		
 		const response: MessageResponse = {
 			status: StatusCodes.OK,
@@ -168,20 +168,20 @@ export const updateTaskController = async (req: Request, res: Response): Promise
 		const message = err instanceof Error ? err.message : 'Unknown error';
 
 		switch (message) {
-			case 'Task not found':
-				status = StatusCodes.NOT_FOUND;
-				break;
-			case 'Invalid Format':
-				status = StatusCodes.UNPROCESSABLE_ENTITY;
-				break;
-			case 'Unauthorized to update this task':
-				status = StatusCodes.FORBIDDEN;
-				break;
-			case 'User not authenticated':
-				status = StatusCodes.UNAUTHORIZED;
-				break;
-			default:
-				status = StatusCodes.INTERNAL_SERVER_ERROR;
+		case 'Task not found':
+			status = StatusCodes.NOT_FOUND;
+			break;
+		case 'Invalid Format':
+			status = StatusCodes.UNPROCESSABLE_ENTITY;
+			break;
+		case 'Unauthorized to update this task':
+			status = StatusCodes.FORBIDDEN;
+			break;
+		case 'User not authenticated':
+			status = StatusCodes.UNAUTHORIZED;
+			break;
+		default:
+			status = StatusCodes.INTERNAL_SERVER_ERROR;
 		}
 
 		const errorResponse: ErrorResponse = {
@@ -228,18 +228,18 @@ export const deleteTaskController = async (req: Request, res: Response): Promise
 
 		// Handle specific error cases
 		switch (message) {
-			case 'Task Not Found':
-				status = StatusCodes.NOT_FOUND; // Use status code 404 for user not found
-				break;
-			case 'User not authenticated':
-				status = StatusCodes.UNAUTHORIZED; // Use status code 401 for invalid token or userid
-				break;
-			case 'Unauthorized to delete this task':
-				status = StatusCodes.FORBIDDEN;
-				break;
-			default:
-				status = StatusCodes.INTERNAL_SERVER_ERROR; // Any other internal server error
-				break;
+		case 'Task Not Found':
+			status = StatusCodes.NOT_FOUND; // Use status code 404 for user not found
+			break;
+		case 'User not authenticated':
+			status = StatusCodes.UNAUTHORIZED; // Use status code 401 for invalid token or userid
+			break;
+		case 'Unauthorized to delete this task':
+			status = StatusCodes.FORBIDDEN;
+			break;
+		default:
+			status = StatusCodes.INTERNAL_SERVER_ERROR; // Any other internal server error
+			break;
 		}
 
 		// Create an error response object

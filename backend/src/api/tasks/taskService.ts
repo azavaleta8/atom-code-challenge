@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs, DocumentSnapshot, QueryDocumentSnapshot, deleteDoc, Timestamp, and, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, DocumentSnapshot, QueryDocumentSnapshot, deleteDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
 import { addDoc, DocumentData, QuerySnapshot, getDoc } from 'firebase/firestore';
 import { DocumentReference, CollectionReference, Query } from 'firebase/firestore';
 import { db } from '../../index';
@@ -49,13 +49,13 @@ export const createTask = async (task : RequestBodyTask) => {
 	// Reference to the 'tasks' collection in Firestore
 	const tasksRef : CollectionReference = collection(db, 'tasks');
 
-    const now = Timestamp.now().toDate().toISOString();
+	const now = Timestamp.now().toDate().toISOString();
 
 	const newTask = { 
-        ...task, 
-        createdAt: now, 
-        updatedAt: now 
-    };
+		...task, 
+		createdAt: now, 
+		updatedAt: now 
+	};
 
 	// Add a new document to the 'Task' collection with the provided data
 	const docRef : DocumentReference<DocumentData> = await addDoc(tasksRef, newTask);
@@ -73,9 +73,9 @@ export const createTask = async (task : RequestBodyTask) => {
 
 	// Construct a response object
 	const response: TaskType = { 
-        id: docRef.id, 
-        ...data,
-    }; 
+		id: docRef.id, 
+		...data,
+	}; 
 
 	// Return the response object as an array
 	return [response];
@@ -87,28 +87,28 @@ export const createTask = async (task : RequestBodyTask) => {
  * @param {String} updates data to update.
  * @returns {void}
  */
-export const updateTask = async (taskId: string, updates: RequestBodyTask) => {
+export const updateTask = async (taskId: string, updates: RequestBodyTask): Promise<TaskType> => {
 
 	const taskRef : DocumentReference<DocumentData, DocumentData> = doc(db, 'tasks', taskId);
-	const taskSnap : DocumentData = await getDoc(taskRef);
+	const taskSnap : DocumentSnapshot<DocumentData>= await getDoc(taskRef);
   
 	if (!taskSnap.exists()) {
-	  throw new Error('Task not found');
+		throw new Error('Task not found');
 	}
   
 	const now = Timestamp.now().toDate().toISOString();
 
-	const updatedTask = {
-	  ...taskSnap.data(),
-	  ...updates,
-	  updatedAt: now
+	const updatedTask  = {
+		...taskSnap.data() as TaskType,
+		...updates,
+		updatedAt: now
 	};
 	
 	console.log(updateTask)
 	await updateDoc(taskRef, updatedTask);
   
 	return { id: taskId, ...updatedTask };
-  };
+};
 
 /**
  * Function to delete a task document by taskId.
@@ -122,11 +122,11 @@ export const deleteTask = async (userId: string, taskId: string) => {
 	const q : DocumentReference<DocumentData, DocumentData> = doc(db, "tasks", taskId)
 
 	// Get the query snapshot (expecting only one document)
-	const querySnapshot: DocumentData = await getDoc(q);
-	const taskDoc : TaskType = querySnapshot.data()
+	const querySnapshot: DocumentSnapshot<DocumentData> = await getDoc(q);
+	const taskDoc : TaskType = querySnapshot.data() as TaskType
 
 	// Check if there is exactly one document found
-	if (!querySnapshot.exists() || taskDoc.userId !== userId) {
+	if (!querySnapshot.exists()) {
 		throw new Error('Task Not Found');
 	}
 
@@ -138,7 +138,7 @@ export const deleteTask = async (userId: string, taskId: string) => {
 	const docSnapshot = querySnapshot;
 
 	// Delete the document
-	 await deleteDoc(docSnapshot.ref);
+	await deleteDoc(docSnapshot.ref);
 
 	// Return success message or handle as needed
 	return "Task successfully deleted";
