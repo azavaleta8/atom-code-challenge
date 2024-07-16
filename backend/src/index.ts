@@ -3,7 +3,10 @@ import { FirebaseApp, initializeApp } from 'firebase/app';
 import { Firestore, getFirestore } from 'firebase/firestore';
 import 'dotenv/config';
 
-const { NODE_ENV, HOST, PORT, DB_API_KEY } = process.env;
+const NODE_ENV = process.env.NODE_ENV || "dev"
+const HOST = process.env.VERCEL_URL || "localhost"
+const PORT = process.env.PORT || "3000"
+const DB_API_KEY = process.env.DB_API_KEY || "AIzaSyAit-luepZ3dGHUXIsRxH0R_f9LEV_fOiE" //SOLO PARA PRUEBAS
 
 const firebaseConfig = {
 	apiKey: DB_API_KEY,
