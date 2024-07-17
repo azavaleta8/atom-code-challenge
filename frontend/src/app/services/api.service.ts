@@ -7,7 +7,7 @@ import { catchError, tap, map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class ApiService {
-	private apiUrl =  "https://atom-code-challenge-api.onrender.com/api" //"http://localhost:3000/api";
+	private apiUrl =  "http://localhost:3000/api";
 
 	constructor(private http: HttpClient) { }
 
